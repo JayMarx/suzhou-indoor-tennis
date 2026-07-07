@@ -4,84 +4,42 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#0b7d3e" />
+<meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="description" content="苏州室内网球场速查：快速查找苏州市及各区、县级市的室内网球场馆，支持按距离找场、一键导航与拨打电话。" />
+<meta name="keywords" content="苏州,室内网球场,网球馆,恒温网球馆,气膜网球馆,网球场预约" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23c6f24e'/%3E%3Cpath d='M4 8a14 14 0 0 1 0 16M28 8a14 14 0 0 0 0 16' fill='none' stroke='%23095f2f' stroke-width='2'/%3E%3C/svg%3E" />
 <title>苏州室内网球场 · 速查</title>
-<style>
-  :root{
-    --green:#0b7d3e; --green-d:#095f2f; --bg:#f3f5f4; --card:#fff;
-    --text:#1c2620; --sub:#65726b; --chip:#eef4f0;
-  }
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{margin:0;padding:0}
-  body{
-    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Roboto,sans-serif;
-    background:var(--bg); color:var(--text); line-height:1.5;
-    padding-bottom:calc(env(safe-area-inset-bottom) + 8px);
-  }
-  header{
-    position:sticky; top:0; z-index:10;
-    background:linear-gradient(135deg,var(--green),var(--green-d));
-    color:#fff; padding:16px 16px 12px; padding-top:calc(14px + env(safe-area-inset-top));
-    box-shadow:0 2px 10px rgba(0,0,0,.12);
-  }
-  .title{display:flex;align-items:center;gap:8px;font-size:19px;font-weight:700}
-  .title small{font-weight:400;opacity:.85;font-size:12px}
-  .search{
-    margin-top:12px; display:flex; align-items:center; gap:8px;
-    background:rgba(255,255,255,.96); border-radius:12px; padding:11px 12px;
-  }
-  .search input{border:0; outline:0; width:100%; font-size:16px; background:transparent; color:#111}
-  .toolbar{display:flex; gap:8px; margin-top:10px}
-  .near{
-    flex:0 0 auto; display:flex; align-items:center; gap:6px;
-    background:rgba(255,255,255,.16); color:#fff; border:1px solid rgba(255,255,255,.35);
-    border-radius:20px; padding:8px 14px; font-size:14px; font-weight:600; cursor:pointer;
-  }
-  .near.on{background:#fff; color:var(--green-d); border-color:#fff}
-  .near.loading{opacity:.7}
-  .chips{display:flex; gap:8px; overflow-x:auto; padding:12px 16px 4px; scrollbar-width:none}
-  .chips::-webkit-scrollbar{display:none}
-  .chip{
-    flex:0 0 auto; padding:7px 14px; border-radius:20px; background:var(--card);
-    color:var(--sub); font-size:14px; border:1px solid #e2e8e4; white-space:nowrap; cursor:pointer;
-  }
-  .chip.active{background:var(--green); color:#fff; border-color:var(--green)}
-  .count{padding:2px 16px 6px; color:var(--sub); font-size:13px; display:flex; justify-content:space-between; align-items:center}
-  .count .hint{font-size:12px; color:#9aa39c}
-  .list{padding:4px 12px 24px; display:flex; flex-direction:column; gap:12px}
-  .card{background:var(--card); border-radius:16px; padding:14px 14px 12px; box-shadow:0 1px 4px rgba(20,40,30,.06); position:relative}
-  .card h2{margin:0 34px 0 0; font-size:17px; font-weight:700; display:flex; align-items:center; gap:8px; flex-wrap:wrap}
-  .tag{font-size:11px; font-weight:600; padding:2px 8px; border-radius:6px; background:var(--chip); color:var(--green-d)}
-  .tag.film{background:#eaf1ff; color:#2456c7}
-  .tag.pro{background:#fff2e6; color:#c26a12}
-  .fav{position:absolute; top:12px; right:10px; font-size:22px; line-height:1; cursor:pointer; color:#d9dfdb; user-select:none}
-  .fav.on{color:#f5a623}
-  .addr{color:var(--sub); font-size:14px; margin:8px 0 4px; display:flex; gap:6px}
-  .addr svg{flex:0 0 auto; margin-top:3px}
-  .dist{color:var(--green); font-weight:600; font-size:13px; margin:2px 0 6px}
-  .note{color:#8a938c; font-size:12.5px; margin:2px 0 10px}
-  .actions{display:flex; gap:10px}
-  .btn{flex:1; text-align:center; text-decoration:none; font-size:15px; font-weight:600; padding:11px 0; border-radius:10px; display:flex; align-items:center; justify-content:center; gap:6px; border:0; cursor:pointer}
-  .btn.nav{background:var(--green); color:#fff}
-  .btn.call{background:var(--chip); color:var(--green-d)}
-  .btn.call.disabled{opacity:.45; pointer-events:none}
-  .empty{text-align:center; color:var(--sub); padding:48px 20px}
-  .toTop{position:fixed; right:16px; bottom:calc(20px + env(safe-area-inset-bottom)); width:44px; height:44px; border-radius:50%; background:var(--green); color:#fff; border:0; font-size:20px; box-shadow:0 4px 12px rgba(0,0,0,.2); display:none; align-items:center; justify-content:center; cursor:pointer; z-index:20}
-  .toTop.show{display:flex}
-  footer{text-align:center; color:#9aa39c; font-size:12px; padding:8px 24px 28px; line-height:1.6}
-</style>
+<link rel="stylesheet" href="styles.css?v=2" />
 </head>
 <body>
-<header>
-  <div class="title">🎾 苏州室内网球场 <small>速查 · 手机版</small></div>
+<div class="hero">
+  <div class="hero-ball" aria-hidden="true"></div>
+  <svg class="hero-court" viewBox="0 0 160 240" aria-hidden="true">
+    <rect x="10" y="10" width="140" height="220" rx="2" fill="none" stroke="rgba(198,242,78,.85)" stroke-width="3"/>
+    <line x1="10" y1="120" x2="150" y2="120" stroke="rgba(198,242,78,.85)" stroke-width="3"/>
+    <rect x="30" y="60" width="100" height="120" fill="none" stroke="rgba(198,242,78,.55)" stroke-width="2"/>
+    <line x1="80" y1="60" x2="80" y2="180" stroke="rgba(198,242,78,.55)" stroke-width="2"/>
+    <circle cx="80" cy="120" r="12" fill="rgba(198,242,78,.9)"/>
+  </svg>
+  <h1>🎾 苏州室内网球场</h1>
+  <p>雨天酷暑寒冬都能打 · 按距离找场，一键导航与拨打</p>
+  <div class="hero-stats">
+    <span class="stat">全市 <b id="heroCount">20</b> 家场馆</span>
+    <span class="stat">覆盖 <b id="heroAreas">10</b>+ 区县</span>
+    <span class="stat">含气膜恒温馆</span>
+  </div>
+</div>
+
+<header style="box-shadow:none;padding-top:12px">
   <div class="search">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0b7d3e" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
     <input id="q" type="search" placeholder="搜索场馆名 / 地址 / 地区" autocomplete="off" />
   </div>
   <div class="toolbar">
-    <button class="near" id="near">📍 离我最近</button>
-    <button class="near" id="favBtn">⭐ 收藏</button>
+    <button class="pill" id="near">📍 离我最近</button>
+    <button class="pill" id="favBtn">⭐ 收藏</button>
   </div>
 </header>
 
@@ -90,121 +48,19 @@
 <div class="list" id="list"></div>
 <button class="toTop" id="toTop" aria-label="返回顶部">↑</button>
 
-<footer>
-  数据整理自公开信息，仅供参考，出行前请电话确认场地与价格。<br/>
-  建议在「苏体通 / 大众点评 / 动网」小程序查看实时空场与预约。
-</footer>
+<footer>数据整理自公开信息，非官方渠道，仅供参考；出行前请电话确认。</footer>
 
+<nav class="tabbar">
+  <a href="index.html" class="active"><span class="ic">🏠</span>首页</a>
+  <a href="venues.html"><span class="ic">🎾</span>全部场馆</a>
+  <a href="about.html"><span class="ic">ℹ️</span>关于</a>
+</nav>
+
+<script src="data.js"></script>
 <script>
-// ── 苏州室内网球场数据（lat/lng 为近似坐标，用于距离排序）──────────
-const VENUES = [
-  { name:"苏州奥林匹克体育中心网球馆", area:"工业园区", addr:"工业园区星塘街1888号 奥体中心", phone:"", tags:["室内","专业"], note:"多片标准室内场，赛事级场馆", lat:31.2712, lng:120.7385 },
-  { name:"苏州工业园区体育中心网球馆", area:"工业园区", addr:"工业园区苏虹中路68号（近金鸡湖）", phone:"0512-66680114", tags:["室内","专业"], note:"多块室内场，设青少年及成人教学班", lat:31.3178, lng:120.6790 },
-  { name:"苏州科技文化艺术中心网球馆（苏艺）", area:"工业园区", addr:"工业园区观枫街1号", phone:"", tags:["室内"], note:"环境雅致，部分场地半室内", lat:31.3230, lng:120.6810 },
-  { name:"轻空间气膜网球馆（园区）", area:"工业园区", addr:"工业园区（气膜馆，具体点位见大众点评）", phone:"", tags:["气膜","室内"], note:"四季恒温、新风照明，全天候", lat:31.2950, lng:120.7300 },
-  { name:"苏州高新区文体中心网球馆", area:"高新区", addr:"高新区狮山路文体中心", phone:"", tags:["室内"], note:"场地新，交通便利，可团体包场", lat:31.3050, lng:120.5760 },
-  { name:"吴中区文体中心网球馆", area:"吴中区", addr:"吴中区越溪街道吴中大道199号", phone:"", tags:["室内"], note:"大型体育综合体，支持年卡/次卡/临时", lat:31.2320, lng:120.5860 },
-  { name:"吴江网球中心", area:"吴江区", addr:"吴江区体育路609号", phone:"13914026620", tags:["室内"], note:"室内+室外，9:00-21:00，每场限1小时", lat:31.1590, lng:120.6390 },
-  { name:"苏州市市民健身中心网球场", area:"姑苏区", addr:"姑苏区五卅路175号", phone:"0512-65227806", tags:["半室内"], note:"部分时段半室内遮棚，「苏体健身+」预约", lat:31.3080, lng:120.6240 },
-  { name:"昆山市体育中心网球馆", area:"昆山市", addr:"昆山市体育中心内（详见苏体通）", phone:"", tags:["室内"], note:"室内外球场，设施完善", lat:31.3860, lng:120.9800 },
-  { name:"相城区文体中心网球馆", area:"相城区", addr:"相城区社区文体中心（详见苏体通）", phone:"", tags:["室内"], note:"小程序/电话预约", lat:31.3690, lng:120.6420 },
-  { name:"太仓市体育中心网球馆", area:"太仓市", addr:"太仓市体育中心内（详见苏体通）", phone:"", tags:["室内"], note:"室内外球场", lat:31.4520, lng:121.1080 },
-  { name:"张家港市体育中心网球馆", area:"张家港市", addr:"张家港市体育中心内（详见苏体通）", phone:"", tags:["室内"], note:"室内外球场", lat:31.8760, lng:120.5550 },
-  { name:"苏州市体育中心网球场", area:"姑苏区", addr:"姑苏区三香路1188号 苏州市体育中心", phone:"", tags:["室内"], note:"市级综合体育中心，含网球场，详见苏体通", lat:31.3010, lng:120.5960 },
-  { name:"苏州湾体育中心网球馆", area:"吴江区", addr:"吴江区太湖新城 苏州湾体育公园", phone:"", tags:["室内"], note:"太湖新城大型场馆群，含网球馆", lat:31.1330, lng:120.6350 },
-  { name:"苏州科技城体育运动中心网球馆", area:"高新区", addr:"高新区科技城 昆仑山路", phone:"", tags:["室内"], note:"科技城综合运动中心，含网球场", lat:31.3400, lng:120.4980 },
-  { name:"常熟市体育中心网球馆", area:"常熟市", addr:"常熟市海虞北路 体育中心", phone:"", tags:["室内"], note:"县级市体育中心，室内外球场", lat:31.6580, lng:120.7520 },
-  { name:"吴江盛泽体育馆网球场", area:"吴江区", addr:"吴江区盛泽镇 盛泽体育馆", phone:"", tags:["室内"], note:"镇级体育馆，含网球场，详见苏体通", lat:30.9200, lng:120.6350 },
-  { name:"昆山花桥国际商务城体育馆网球场", area:"昆山市", addr:"昆山市花桥经济开发区 体育馆", phone:"", tags:["室内"], note:"花桥片区体育馆，含网球场", lat:31.2830, lng:121.0100 },
-  { name:"太仓市文化艺术中心网球馆", area:"太仓市", addr:"太仓市城厢镇 文化艺术中心", phone:"", tags:["室内"], note:"含室内球场，详见苏体通/大众点评", lat:31.4530, lng:121.1050 },
-  { name:"苏州大学体育馆网球场（独墅湖校区）", area:"工业园区", addr:"工业园区独墅湖高教区 苏州大学", phone:"", tags:["室内"], note:"高校场馆，对外时段有限，需提前确认", lat:31.2720, lng:120.7370 },
-];
-
-const AREAS = ["全部", ...Array.from(new Set(VENUES.map(v=>v.area)))];
-let curArea="全部", curQ="", myPos=null, favOnly=false;
-const favs = new Set(JSON.parse(localStorage.getItem("szt_favs")||"[]"));
-
-const chipsEl=document.getElementById("chips"), listEl=document.getElementById("list"),
-      countEl=document.getElementById("count"), qEl=document.getElementById("q"),
-      nearBtn=document.getElementById("near"), favBtn=document.getElementById("favBtn"),
-      toTop=document.getElementById("toTop");
-
-AREAS.forEach(a=>{
-  const c=document.createElement("div");
-  c.className="chip"+(a===curArea?" active":""); c.textContent=a;
-  c.onclick=()=>{ curArea=a; [...chipsEl.children].forEach(x=>x.classList.toggle("active",x.textContent===a)); render(); };
-  chipsEl.appendChild(c);
-});
-
-qEl.addEventListener("input",e=>{ curQ=e.target.value.trim().toLowerCase(); render(); });
-
-nearBtn.onclick=()=>{
-  if(myPos){ myPos=null; nearBtn.classList.remove("on"); render(); return; }
-  if(!navigator.geolocation){ alert("当前浏览器不支持定位"); return; }
-  nearBtn.classList.add("loading"); nearBtn.textContent="📍 定位中…";
-  navigator.geolocation.getCurrentPosition(
-    p=>{ myPos={lat:p.coords.latitude,lng:p.coords.longitude}; nearBtn.classList.remove("loading"); nearBtn.classList.add("on"); nearBtn.textContent="📍 离我最近"; render(); },
-    ()=>{ nearBtn.classList.remove("loading"); nearBtn.textContent="📍 离我最近"; alert("定位失败，请在浏览器允许定位权限"); },
-    {enableHighAccuracy:true,timeout:8000}
-  );
-};
-
-favBtn.onclick=()=>{ favOnly=!favOnly; favBtn.classList.toggle("on",favOnly); render(); };
-
-function haversine(a,b){
-  const R=6371, dLat=(b.lat-a.lat)*Math.PI/180, dLng=(b.lng-a.lng)*Math.PI/180;
-  const s=Math.sin(dLat/2)**2+Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLng/2)**2;
-  return R*2*Math.atan2(Math.sqrt(s),Math.sqrt(1-s));
-}
-function mapLink(v){
-  const kw=encodeURIComponent(v.name+" "+v.addr);
-  return "https://uri.amap.com/marker/?position="+v.lng+","+v.lat+"&name="+encodeURIComponent(v.name)+"&src=web&callnative=1";
-}
-function tagClass(t){ return t==="气膜"?"tag film":(t==="专业"?"tag pro":"tag"); }
-function toggleFav(name){
-  if(favs.has(name)) favs.delete(name); else favs.add(name);
-  localStorage.setItem("szt_favs",JSON.stringify([...favs])); render();
-}
-
-function render(){
-  let items=VENUES.map(v=>({...v, dist: myPos?haversine(myPos,v):null}));
-  items=items.filter(v=>{
-    if(favOnly && !favs.has(v.name)) return false;
-    if(curArea!=="全部" && v.area!==curArea) return false;
-    if(curQ){ const hay=(v.name+v.addr+v.area+v.tags.join("")+v.note).toLowerCase(); if(!hay.includes(curQ)) return false; }
-    return true;
-  });
-  if(myPos) items.sort((a,b)=>a.dist-b.dist);
-
-  countEl.innerHTML="<span>共 "+items.length+" 个场馆</span>"+(myPos?'<span class="hint">已按距离排序</span>':'');
-  if(!items.length){ listEl.innerHTML='<div class="empty">没有匹配的场馆，换个条件试试～</div>'; return; }
-
-  listEl.innerHTML=items.map(v=>{
-    const tags=v.tags.map(t=>`<span class="${tagClass(t)}">${t}</span>`).join("");
-    const call=v.phone?`<a class="btn call" href="tel:${v.phone}">📞 拨打</a>`:`<span class="btn call disabled">📞 暂无电话</span>`;
-    const dist=v.dist!=null?`<div class="dist">🚗 约 ${v.dist<1?Math.round(v.dist*1000)+" 米":v.dist.toFixed(1)+" 公里"}</div>`:"";
-    const on=favs.has(v.name)?" on":"";
-    return `<div class="card">
-      <span class="fav${on}" onclick="toggleFav('${v.name.replace(/'/g,"\\'")}')">${favs.has(v.name)?"★":"☆"}</span>
-      <h2>${v.name} ${tags}</h2>
-      <div class="addr">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#65726b" stroke-width="2"><path d="M12 21s-7-6.3-7-11a7 7 0 1 1 14 0c0 4.7-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
-        <span>${v.addr}</span>
-      </div>
-      ${dist}
-      ${v.note?`<div class="note">${v.note}</div>`:""}
-      <div class="actions">
-        <a class="btn nav" href="${mapLink(v)}" target="_blank" rel="noopener">🧭 地图导航</a>
-        ${call}
-      </div>
-    </div>`;
-  }).join("");
-}
-
-window.addEventListener("scroll",()=>{ toTop.classList.toggle("show",window.scrollY>400); });
-toTop.onclick=()=>window.scrollTo({top:0,behavior:"smooth"});
-window.toggleFav=toggleFav;
-render();
+  document.getElementById("heroCount").textContent=VENUES.length;
+  document.getElementById("heroAreas").textContent=new Set(VENUES.map(v=>v.area)).size;
 </script>
+<script src="app.js"></script>
 </body>
 </html>

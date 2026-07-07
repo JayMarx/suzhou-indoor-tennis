@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#0b7d3e" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="description" content="苏州室内网球场馆详情：地址、电话、营业信息、地图导航与备注。" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23c6f24e'/%3E%3Cpath d='M4 8a14 14 0 0 1 0 16M28 8a14 14 0 0 0 0 16' fill='none' stroke='%23095f2f' stroke-width='2'/%3E%3C/svg%3E" />
+<title>场馆详情 · 苏州室内网球场</title>
+<link rel="stylesheet" href="styles.css?v=2" />
+</head>
+<body>
+<header>
+  <div class="brand">🎾 场馆详情</div>
+</header>
+
+<div class="detail" id="detail"></div>
+
+<nav class="tabbar">
+  <a href="index.html"><span class="ic">🏠</span>首页</a>
+  <a href="venues.html"><span class="ic">🎾</span>全部场馆</a>
+  <a href="about.html"><span class="ic">ℹ️</span>关于</a>
+</nav>
+
+<script src="data.js"></script>
+<script>
+(function(){
+  const S=window.SZT;
+  const id=new URLSearchParams(location.search).get("id");
+  const v=S.find(id);
+  const el=document.getElementById("detail");
+  if(!v){ el.innerHTML='<a class="back" href="venues.html">‹ 返回全部场馆</a><div class="empty">未找到该场馆，请返回列表重新选择。</div>'; return; }
+  document.title=v.name+" · 苏州室内网球场";
+  const tags=v.tags.map(t=>`<span class="${S.tagClass(t)}">${t}</span>`).join(" ");
+  const call=v.phone?`<a class="btn call" href="tel:${v.phone}">📞 拨打 ${v.phone}</a>`:`<span class="btn call disabled">📞 电话请查苏体通</span>`;
+  const favs=S.favs(); const on=favs.has(v.slug);
+  el.innerHTML=`
+    <a class="back" href="venues.html">‹ 返回全部场馆</a>
+    <div class="detail-card">
+      <span class="fav${on?" on":""}" id="favBtn" role="button" aria-label="收藏" style="position:static;float:right">${on?"★":"☆"}</span>
+      <h1>${v.name}</h1>
+      <div style="margin:2px 0 6px">${tags}</div>
+      <div class="kv"><span class="k">地区</span><span class="v">${v.area}</span></div>
+      <div class="kv"><span class="k">地址</span><span class="v">${v.addr}</span></div>
+      <div class="kv"><span class="k">电话</span><span class="v">${v.phone||'<span style="color:#8a938c">未公开，详见苏体通/大众点评</span>'}</span></div>
+      <div class="kv"><span class="k">营业</span><span class="v">${v.hours||'详见苏体通'}</span></div>
+      <div class="kv"><span class="k">备注</span><span class="v">${v.note||'—'}</span></div>
+      <div class="actions">
+        <a class="btn nav" href="${S.mapLink(v)}" target="_blank" rel="noopener">🧭 地图导航</a>
+        ${call}
+      </div>
+    </div>
+    <div class="disclaimer">ℹ️ 坐标为区级近似值，仅用于距离排序；地址/电话/营业信息请以官方或苏体通、大众点评为准。本站为非官方信息聚合。</div>
+  `;
+
+  // 同区其他场馆推荐
+  const nearby=VENUES.filter(x=>x.area===v.area && x.slug!==v.slug).slice(0,4);
+  if(nearby.length){
+    const items=nearby.map(x=>{
+      const tags=x.tags.map(t=>`<span class="${S.tagClass(t)}">${t}</span>`).join(" ");
+      return `<a class="nearby-item" href="venue.html?id=${x.slug}">
+        <span class="nearby-name">${x.name} ${tags}</span>
+        <span class="nearby-addr">${x.addr}</span>
+      </a>`;
+    }).join("");
+    el.insertAdjacentHTML("beforeend", `
+      <h2 class="nearby-title">${v.area} · 其他室内网球场</h2>
+      <div class="nearby-list">${items}</div>
+    `);
+  }
+
+  const fb=document.getElementById("favBtn");
+  if(fb) fb.onclick=()=>{ const f=S.toggleFav(v.slug); const now=f.has(v.slug); fb.textContent=now?"★":"☆"; fb.classList.toggle("on",now); };
+})();
+</script>
+</body>
+</html>

@@ -52,7 +52,9 @@
 
     listEl.innerHTML=items.map(v=>{
       const tags=v.tags.map(t=>`<span class="${S.tagClass(t)}">${t}</span>`).join("");
-      const call=v.phone?`<a class="btn call" href="tel:${v.phone}">📞 拨打</a>`:`<span class="btn call disabled">📞 暂无电话</span>`;
+      const call=v.phone
+        ?`<a class="btn call" href="tel:${v.phone}">📞 ${v.phone}</a>`
+        :`<span class="no-phone">电话请查苏体通/大众点评</span>`;
       const dist=v.dist!=null?`<div class="dist">🚗 约 ${S.distText(v.dist)}</div>`:"";
       const on=favs.has(v.slug)?" on":"";
       return `<div class="card">

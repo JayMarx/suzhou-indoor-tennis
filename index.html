@@ -11,7 +11,7 @@
 <meta name="keywords" content="苏州,室内网球场,网球馆,恒温网球馆,气膜网球馆,网球场预约" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23c6f24e'/%3E%3Cpath d='M4 8a14 14 0 0 1 0 16M28 8a14 14 0 0 0 0 16' fill='none' stroke='%23095f2f' stroke-width='2'/%3E%3C/svg%3E" />
 <title>苏州室内网球场 · 速查</title>
-<link rel="stylesheet" href="styles.css?v=2" />
+<link rel="stylesheet" href="styles.css?v=3" />
 </head>
 <body>
 <div class="hero">
@@ -29,19 +29,17 @@
     <span class="stat">全市 <b id="heroCount">20</b> 家场馆</span>
     <span class="stat">覆盖 <b id="heroAreas">10</b>+ 区县</span>
     <span class="stat">含气膜恒温馆</span>
+  <div class="hero-tools">
+    <div class="search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0b7d3e" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+      <input id="q" type="search" placeholder="搜索场馆名 / 地址 / 地区" autocomplete="off" />
+    </div>
+    <div class="toolbar">
+      <button class="pill" id="near">📍 离我最近</button>
+      <button class="pill" id="favBtn">⭐ 收藏</button>
+    </div>
   </div>
 </div>
-
-<header style="box-shadow:none;padding-top:12px">
-  <div class="search">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0b7d3e" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
-    <input id="q" type="search" placeholder="搜索场馆名 / 地址 / 地区" autocomplete="off" />
-  </div>
-  <div class="toolbar">
-    <button class="pill" id="near">📍 离我最近</button>
-    <button class="pill" id="favBtn">⭐ 收藏</button>
-  </div>
-</header>
 
 <div class="chips" id="chips"></div>
 <div class="count" id="count"></div>
@@ -51,16 +49,17 @@
 <footer>数据整理自公开信息，非官方渠道，仅供参考；出行前请电话确认。</footer>
 
 <nav class="tabbar">
-  <a href="index.html" class="active"><span class="ic">🏠</span>首页</a>
-  <a href="venues.html"><span class="ic">🎾</span>全部场馆</a>
-  <a href="about.html"><span class="ic">ℹ️</span>关于</a>
+  <a href="index.html" class="active"><svg class="tab-ic" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 12v7a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>首页</a>
+  <a href="venues.html"><svg class="tab-ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 9a8 8 0 000 6M18 9a8 8 0 010 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>场馆</a>
+  <a href="about.html"><svg class="tab-ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><line x1="12" y1="16" x2="12" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="8" r="1" fill="currentColor"/></svg>关于</a>
 </nav>
 
-<script src="data.js"></script>
+<script src="data.js?v=3"></script>
 <script>
   document.getElementById("heroCount").textContent=VENUES.length;
   document.getElementById("heroAreas").textContent=new Set(VENUES.map(v=>v.area)).size;
 </script>
-<script src="app.js"></script>
+<script src="app.js?v=3"></script>
 </body>
 </html>
+

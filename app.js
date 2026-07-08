@@ -1,8 +1,6 @@
-// 苏州室内网球场 · 首页 + 全部场馆 共享列表逻辑
+// 苏州室内网球场 · 全部场馆页 列表逻辑
 (function(){
   const S = window.SZT;
-  const isHome = !!document.getElementById("heroCount");
-  const HOME_LIMIT = 6;
   let curArea="全部", curQ="", myPos=null, favOnly=false;
 
   const chipsEl=document.getElementById("chips"),
@@ -13,8 +11,12 @@
         favBtn=document.getElementById("favBtn"),
         toTop=document.getElementById("toTop");
 
-  // 地区 chips（仅全部场馆页）
-  if(chipsEl && !isHome){
+  // 从 URL 读取搜索词（首页搜索跳转过来）
+  const urlQ=new URLSearchParams(location.search).get("q");
+  if(urlQ && qEl){ qEl.value=urlQ; curQ=urlQ.trim().toLowerCase(); }
+
+  // 地区 chips
+  if(chipsEl){
     S.areas().forEach(a=>{
       const c=document.createElement("div");
       c.className="chip"+(a===curArea?" active":""); c.textContent=a;
@@ -51,11 +53,8 @@
     });
     if(myPos) items.sort((a,b)=>a.dist-b.dist);
 
-    if(countEl && !isHome) countEl.innerHTML="<span>共 "+items.length+" 个场馆</span>"+(myPos?'<span class="hint">已按距离排序</span>':'');
+    if(countEl) countEl.innerHTML="<span>共 "+items.length+" 个场馆</span>"+(myPos?'<span class="hint">已按距离排序</span>':'');
     if(!items.length){ listEl.innerHTML='<div class="empty">没有匹配的场馆，换个条件试试～</div>'; return; }
-
-    const total=items.length;
-    if(isHome) items=items.slice(0, HOME_LIMIT);
 
     listEl.innerHTML=items.map(v=>{
       const tags=v.tags.map(t=>`<span class="${S.tagClass(t)}">${t}</span>`).join("");
@@ -79,11 +78,6 @@
         </div>
       </div>`;
     }).join("");
-
-    if(isHome && total>HOME_LIMIT){
-      listEl.insertAdjacentHTML("beforeend",
-        `<a class="view-all" href="venues.html">查看全部 ${total} 家场馆 →</a>`);
-    }
   }
 
   if(toTop){

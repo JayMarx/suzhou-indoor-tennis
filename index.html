@@ -11,7 +11,7 @@
 <meta name="keywords" content="苏州,室内网球场,网球馆,恒温网球馆,气膜网球馆,网球场预约" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23c6f24e'/%3E%3Cpath d='M4 8a14 14 0 0 1 0 16M28 8a14 14 0 0 0 0 16' fill='none' stroke='%23095f2f' stroke-width='2'/%3E%3C/svg%3E" />
 <title>苏州室内网球场 · 速查</title>
-<link rel="stylesheet" href="styles.css?v=5" />
+<link rel="stylesheet" href="styles.css?v=6" />
 </head>
 <body>
 <div class="hero">
@@ -29,21 +29,15 @@
     <span class="stat">全市 <b id="heroCount">20</b> 家场馆</span>
     <span class="stat">覆盖 <b id="heroAreas">10</b>+ 区县</span>
     <span class="stat">含气膜恒温馆</span>
-  <div class="hero-tools">
-    <div class="search">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0b7d3e" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
-      <input id="q" type="search" placeholder="搜索场馆名 / 地址 / 地区" autocomplete="off" />
-    </div>
-    <div class="toolbar">
-      <button class="pill" id="near">📍 离我最近</button>
-      <button class="pill" id="favBtn">⭐ 收藏</button>
-    </div>
   </div>
+  <form class="hero-search" action="venues.html" method="get" autocomplete="off">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0b7d3e" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+    <input name="q" type="search" placeholder="搜索场馆名 / 地址 / 地区，回车查看全部" />
+  </form>
 </div>
 
-<div class="home-section-title">附近推荐</div>
+<div class="home-section-title" id="sectionTitle">推荐场馆</div>
 <div class="list" id="list"></div>
-<button class="toTop" id="toTop" aria-label="返回顶部">↑</button>
 
 <footer>数据整理自公开信息，非官方渠道，仅供参考；出行前请电话确认。</footer>
 
@@ -53,14 +47,65 @@
   <a href="about.html"><svg class="tab-ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><line x1="12" y1="16" x2="12" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="8" r="1" fill="currentColor"/></svg>关于</a>
 </nav>
 
-<script src="data.js?v=5"></script>
+<script src="data.js?v=6"></script>
 <script>
-  document.getElementById("heroCount").textContent=VENUES.length;
-  document.getElementById("heroAreas").textContent=new Set(VENUES.map(v=>v.area)).size;
+document.getElementById("heroCount").textContent=VENUES.length;
+document.getElementById("heroAreas").textContent=new Set(VENUES.map(v=>v.area)).size;
+
+(function(){
+  const S=window.SZT, LIMIT=6;
+  const listEl=document.getElementById("list");
+  const titleEl=document.getElementById("sectionTitle");
+
+  function renderCards(items, total){
+    listEl.innerHTML=items.map(v=>{
+      const tags=v.tags.map(t=>`<span class="${S.tagClass(t)}">${t}</span>`).join("");
+      const call=v.phone
+        ?`<a class="btn call" href="tel:${v.phone}">📞 ${v.phone}</a>`
+        :`<span class="no-phone">电话请查苏体通</span>`;
+      const dist=v.dist!=null?`<div class="dist">🚗 约 ${S.distText(v.dist)}</div>`:"";
+      return `<div class="card">
+        <h2><a href="venue.html?id=${v.slug}">${v.name}</a> ${tags}</h2>
+        <div class="addr">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#65726b" stroke-width="2"><path d="M12 21s-7-6.3-7-11a7 7 0 1 1 14 0c0 4.7-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          <span>${v.addr}</span>
+        </div>
+        ${dist}
+        ${v.note?`<div class="note">${v.note}</div>`:""}
+        <div class="actions">
+          <a class="btn nav" href="${S.mapLink(v)}" target="_blank" rel="noopener">🧭 导航</a>
+          ${call}
+        </div>
+      </div>`;
+    }).join("");
+    if(total>LIMIT){
+      listEl.insertAdjacentHTML("beforeend",
+        `<a class="view-all" href="venues.html">查看全部 ${total} 家场馆 →</a>`);
+    }
+  }
+
+  // 静默定位：有权限就按距离排，没有就默认顺序，不弹窗不打扰
+  function show(pos){
+    let items=VENUES.map(v=>({...v, dist:pos?S.haversine(pos,v):null}));
+    if(pos){
+      items.sort((a,b)=>a.dist-b.dist);
+      titleEl.textContent="离你最近";
+    } else {
+      titleEl.textContent="推荐场馆";
+    }
+    renderCards(items.slice(0,LIMIT), items.length);
+  }
+
+  // 先渲染默认，再尝试静默定位更新
+  show(null);
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(
+      p=>show({lat:p.coords.latitude, lng:p.coords.longitude}),
+      ()=>{}, // 失败不提示
+      {enableHighAccuracy:false, timeout:5000}
+    );
+  }
+})();
 </script>
-<script src="app.js?v=5"></script>
 </body>
 </html>
-
-
-

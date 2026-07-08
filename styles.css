@@ -89,6 +89,8 @@ header{
 .btn.call{background:var(--chip); color:var(--green-d)}
 .no-phone{flex:1; text-align:center; font-size:12px; color:#9aa39c; display:flex; align-items:center; justify-content:center; min-height:44px}
 .empty{text-align:center; color:var(--sub); padding:48px 20px}
+.view-all{display:block; text-align:center; padding:14px 0; background:var(--green); color:#fff; border-radius:12px; font-size:16px; font-weight:700; text-decoration:none; min-height:48px; display:flex; align-items:center; justify-content:center}
+.home-section-title{padding:16px 16px 0; font-size:17px; font-weight:700; color:var(--text)}
 
 /* ── 详情页 ── */
 .detail{padding:16px 16px 24px; max-width:792px; margin:0 auto}
